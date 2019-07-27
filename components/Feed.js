@@ -1,5 +1,9 @@
 import React, { Component } from 'react'
-import { FlatList, StyleSheet } from 'react-native'
+import {
+  FlatList,
+  StyleSheet,
+  AsyncStorage
+} from 'react-native'
 import Post from './Post'
 
 const styles = StyleSheet.create({
@@ -15,15 +19,30 @@ export default class Feed extends Component {
       loading: false
     }
   }
+
   componentDidMount() {
     this.getData()
   }
 
   getData = async () => {
+    const {
+      navigation
+    } = this.props
+
     this.setState({
       loading: true
     })
-    const resposta = await fetch('https://instalura-api.herokuapp.com/api/public/fotos/rafael')
+    const login = navigation.getParam('login')
+    const baseUrl = 'https://instalura-api.herokuapp.com/api'
+    let url = `${baseUrl}/fotos`
+    if (login)
+      url = `${baseUrl}/public/fotos/${login}`
+    
+    const resposta = await fetch(url,{
+      headers: new Headers({
+        'X-AUTH-TOKEN': await AsyncStorage.getItem('token')
+      })
+    })
     const data = await resposta.json()
     this.setState({
       fotos: data,
@@ -36,6 +55,7 @@ export default class Feed extends Component {
       fotos,
       loading
     } = this.state
+
     return (
       <FlatList
         refreshing={loading}
