@@ -1,9 +1,11 @@
 import React, { Component } from 'react'
 import {
   FlatList,
-  StyleSheet,
-  AsyncStorage
+  StyleSheet
 } from 'react-native'
+import {
+  AsyncStorage
+} from '@react-native-community/async-storage'
 import Post from './Post'
 
 const styles = StyleSheet.create({
@@ -11,6 +13,8 @@ const styles = StyleSheet.create({
     marginTop: 25
   }
 })
+
+const BASE_URL = 'https://instalura-api.herokuapp.com/api'
 export default class Feed extends Component {
   constructor(props){
     super(props)
@@ -33,10 +37,9 @@ export default class Feed extends Component {
       loading: true
     })
     const login = navigation.getParam('login')
-    const baseUrl = 'https://instalura-api.herokuapp.com/api'
-    let url = `${baseUrl}/fotos`
+    let url = `${BASE_URL}/fotos`
     if (login)
-      url = `${baseUrl}/public/fotos/${login}`
+      url = `${BASE_URL}/public/fotos/${login}`
     
     const resposta = await fetch(url,{
       headers: new Headers({
@@ -50,6 +53,68 @@ export default class Feed extends Component {
     })
   }
 
+  handlerLike = async (idFoto) => {
+    const {
+      fotos
+    } = this.state
+    const resposta = await fetch(`${BASE_URL}/fotos/${idFoto}/like`, {
+      method: 'POST',
+      headers: new Headers({
+        'X-AUTH-TOKEN': await AsyncStorage.getItem('token')
+      })
+    })
+    const data = await resposta.json()
+    this.setState({
+      fotos: fotos.map(item => {
+        if (item.id === idFoto) {
+          let likers = item.likers
+          if (!item.likeada) {
+            likers = [...likers, data]
+          } else {
+            likers = likers.filter(liker => liker.login !== data.login)
+          }
+          return {
+            ...item,
+            likeada: !item.likeada,
+            likers
+          }
+        }
+        return item
+      })
+    })
+  }
+
+  handlerComment = async (idFoto, comment) => {
+    const {
+      fotos
+    } = this.state
+    const resposta = await fetch(`${BASE_URL}/fotos/${idFoto}/comment`, {
+      method: 'POST',
+      body: JSON.stringify({
+        texto: comment
+      }),
+      headers: new Headers({
+        'Content-type': 'application/json',
+        'X-AUTH-TOKEN': await AsyncStorage.getItem('token')
+      })
+    })
+    const data = await resposta.json()
+    this.setState({
+      fotos: fotos.map(item => {
+        if (item.id === idFoto) {
+          return {
+            ...item,
+            comentarios: [
+              ...item.comentarios,
+              data
+            ]
+          }
+        }
+        return item
+      })
+    })
+  }
+ 
   render() {
     const {
       fotos,
@@ -64,7 +129,7 @@ export default class Feed extends Component {
         data={fotos}
         keyExtractor={item => String(item.id)}
         renderItem={({ item }) =>
-          <Post item={item} />
+          <Post item={item} doLike={this.handlerLike} doComment={this.handlerComment} />
         }
       />
     )

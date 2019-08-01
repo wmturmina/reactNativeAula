@@ -4,12 +4,11 @@ import {
   Button,
   TextInput,
   StyleSheet,
-  Dimensions,
-  AsyncStorage
+  Dimensions
 } from 'react-native'
-/*import {
+import {
   AsyncStorage
-} from '@react-native-community/async-storage'*/
+} from '@react-native-community/async-storage'
 
 const screenWidth = Dimensions.get('screen').width
 const styles = StyleSheet.create({

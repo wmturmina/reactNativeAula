@@ -42,7 +42,7 @@ export default class CommentForm extends Component {
     })
   }
   handlerSend = () => {
-    this.props.onSend(this.state.novoComentario)
+    this.props.onSend(this.props.idFoto, this.state.novoComentario)
     this.setState({
       novoComentario: ''
     })
