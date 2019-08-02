@@ -4,11 +4,9 @@ import {
   Button,
   TextInput,
   StyleSheet,
-  Dimensions
-} from 'react-native'
-import {
+  Dimensions,
   AsyncStorage
-} from '@react-native-community/async-storage'
+} from 'react-native'
 
 const screenWidth = Dimensions.get('screen').width
 const styles = StyleSheet.create({
@@ -59,6 +57,7 @@ export default class Login extends Component {
       .then(token => {
         AsyncStorage.setItem('token', token)
         AsyncStorage.setItem('login', login)
+        this.props.navigation.navigate('Feed')
       })
       .catch(error => {
         console.warn('ERRO', error)

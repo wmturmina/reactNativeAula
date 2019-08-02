@@ -1,11 +1,9 @@
 import React, { Component } from 'react'
 import {
   FlatList,
-  StyleSheet
-} from 'react-native'
-import {
+  StyleSheet,
   AsyncStorage
-} from '@react-native-community/async-storage'
+} from 'react-native'
 import Post from './Post'
 
 const styles = StyleSheet.create({

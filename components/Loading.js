@@ -2,11 +2,9 @@ import React from 'react'
 import {
   ActivityIndicator,
   View,
-  StyleSheet
-} from 'react-native'
-import {
+  StyleSheet,
   AsyncStorage
-} from '@react-native-community/async-storage'
+} from 'react-native'
 
 const styles = StyleSheet.create({
   container: {
